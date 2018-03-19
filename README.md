@@ -6,7 +6,7 @@ IP address: 18.195.163.63
 Port: 2200
 
 user can ssh into the system using this command :  
-```
+```shell
 ssh grader@18.195.163.63 -p 2200  
 ```
 
