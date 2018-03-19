@@ -6,25 +6,12 @@ IP address: 18.195.163.63
 Port: 2200
 
 user can ssh into the system using this command :  
-```shell
+```
 ssh grader@18.195.163.63 -p 2200  
 ```
 
 Optional: review flask app at: [github](https://github.com/harushimo/fullstack-nanodegree-vm.git)
 
-
-# Summary of software installed
-| Package Name    |Descripton     | 
-| ----------------|:-------------:| 
-| **apache2**     | HTTP Server |
-| **libapache2-mod-wsgi** |	hosts Python applications on Apache2 server|
-|**postgresql**|	Postgresql Database server|
-|**git**|	Version control system tools|
-|**python-requests**|	Postgresql Database server|
-|**sqlalchemy**|	ORM and SQL tools for Python|
-|**flask**|	Microframework for web applications|
-|**pip**|	Postgresql Database server|
-|**python-psycopg2**|	PostgreSQL adapter for Python|
 
 # Summary of server configuration
 1. Setup Virtual Machine and SSH into the server.
@@ -50,7 +37,7 @@ _Each step is described in the following._
 Follow the instructions at [Udacity](https://classroom.udacity.com/nanodegrees/nd004/parts/ab002e9a-b26c-43a4-8460-dc4c4b11c379/modules/357367901175462/lessons/3573679011239847/concepts/c4cbd3f2-9adb-45d4-8eaf-b5fc89cc606e), to create a virtual machine running Ubuntu (OS only) at Amazon Lightsail. Remember, to allow port number 2200 in firewall settings. Now, go to your terminal, cd to the folder of the .pem-file from Lightspeed and log-in with ssh:
 
 ```
-ssh -i LightsailDefaultPrivateKey-eu-central-1.pem ubuntu@18.195.163.63
+YOUR LOCAL MACHINE:~$ ssh -i LightsailDefaultPrivateKey-eu-central-1.pem ubuntu@18.195.163.63
 ```
 
 ## 2. Update all currently installed packages.
@@ -312,3 +299,15 @@ change oauth at linkedin. Address.
 
 Review this sectioN, to check for all requirements: https://review.udacity.com/#!/rubrics/7/view 
 
+# Summary of software installed
+| Package Name    |Descripton     | 
+| ----------------|:-------------:| 
+| **apache2**     | HTTP Server |
+| **libapache2-mod-wsgi** |	hosts Python applications on Apache2 server|
+|**postgresql**|	Postgresql Database server|
+|**git**|	Version control system tools|
+|**python-requests**|	Postgresql Database server|
+|**sqlalchemy**|	ORM and SQL tools for Python|
+|**flask**|	Microframework for web applications|
+|**pip**|	Postgresql Database server|
+|**python-psycopg2**|	PostgreSQL adapter for Python|
