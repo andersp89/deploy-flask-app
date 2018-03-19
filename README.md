@@ -36,28 +36,28 @@ _Each step is described in the following._
 ## 1. Create a Ubuntu instance on Amazon Lightsail
 Follow the instructions at [Udacity](https://classroom.udacity.com/nanodegrees/nd004/parts/ab002e9a-b26c-43a4-8460-dc4c4b11c379/modules/357367901175462/lessons/3573679011239847/concepts/c4cbd3f2-9adb-45d4-8eaf-b5fc89cc606e), to create a virtual machine running Ubuntu (OS only) at Amazon Lightsail. Remember, to allow port number 2200 in firewall settings. Also, go to settings and download the key file (ending with .pem). Then, go to your terminal, cd to the folder of the .pem-file from Amazon and login with ssh:
 
-	YOUR LOCAL MACHINE:~$ ssh -i LightsailDefaultPrivateKey-eu-central-1.pem ubuntu@18.195.163.63
+```
+YOUR LOCAL MACHINE:~$ ssh -i LightsailDefaultPrivateKey-eu-central-1.pem ubuntu@18.195.163.63
+```
 
 ## 2. Update all currently installed packages.
 Update all available packages: This will provide a list of packages to be upgraded.
-    
-	ubuntu@:~# sudo apt-get update  
-    
+```    
+ubuntu@:~# sudo apt-get update  
+``` 
 Upgrade packages to newer versions:   
-    
-    ubuntu@:~# sudo apt-get upgrade   
+``` 
+ubuntu@:~# sudo apt-get upgrade   
+```
 
 ## 3. Create a new user ("grader") with sudo permissions
 Add a new user called "grader".
-
 ```
-    ubuntu@:~# sudo adduser grader
+ubuntu@:~# sudo adduser grader
 ```
-When promted, set a password for the user.
-
-After the user has been created, give the user sudo rights:
+When promted, set a password for the user. After the user has been created, give the user sudo rights, by running visudo:
 ```
-    ubuntu@:~# sudo visudo
+ubuntu@:~# sudo visudo
 ```
 Once your in the visudo file, add the following code directly below the "root" user following the same format:
 ```
@@ -65,94 +65,105 @@ grader  ALL=(ALL:ALL) ALL
 ```
 
 ## 4. Configure SSH
-Configure SSh to use a non-default port, i.e. _not_ port 22, deactivate root log-in and enable SSH key at login.
+Configure SSh to use a non-default port, i.e. **_not_** port 22, deactivate root log-in and enable SSH key at login.
 
-(a) First, access the ssh config file by:
+a) First, access the ssh config file:
 ```
-    ubuntu@:~# sudo nano /etc/ssh/sshd_config
+ubuntu@:~# sudo nano /etc/ssh/sshd_config
 ```
 
-(b) Change 'Port 22' to Port 2200
+b) Change ```Port 22``` to ```Port 2200```:
 ```
 # What ports, IPs and protocols we listen for
 # Port 22
 Port 2200
 ```
 
-(c) Disable root login
+c) Disable root login:
 ```
 PermitRootLogin no
 ```
 
-(d) Enable clear text password. Later we will disable clear text password, when the ssh-keygen is completed for grader
+d) Enable clear text password. Later we will disable clear text password, when the ssh-keygen is completed for grader:
 ```
 # Change to no to disable tunnelled clear text passwords
 PasswordAuthentication yes
 ```
 
-(e) Restart SSH service for changes to take effect.  
+e) Restart SSH service for changes to take effect: 
 ```
-	ubuntu:~# sudo service ssh restart  
+ubuntu:~# sudo service ssh restart  
 ```  
 
-(f) Now, you can connect to Ubuntu server with new user
+f) Now, you can connect to Ubuntu server with new user
 ```
-	YOUR LOCAL MACHINE:~$ ssh grader@18.195.163.63 -p 2200
+YOUR LOCAL MACHINE:~$ ssh grader@18.195.163.63 -p 2200
 ```
 
-(g) Now, create a ssh key pair for grader, to securely connect with SSH. First, switch back to your local machine and run:
+g) Now, create a ssh key pair for grader, to securely connect with SSH. First, switch back to your local machine and run:
 ```
-	YOUR LOCAL MACHINE:~$ ssh-keygen
+YOUR LOCAL MACHINE:~$ ssh-keygen
 ```  
 Now you are asked to give a filename for the key pair. You can change the **id_rsa** to whatever filename you want. You will be prompted to enter a password to protect the files. This password you will use at every login. When the command has been run, you will see that ssh-keygen has generated two files : file_name (private_key) and file_name.pub (public_key) file. The file file_name.pub will be placed on the server for authorization.
 
-(h) Switch to the remote server as `grader` and create a directory called `.ssh` in the root directory of grader and a new file in `.ssh` named `authorized_keys`, to store the public key in:
+h) Switch to the remote server as `grader` and create a directory called `.ssh` in the root directory of grader and a new file in `.ssh` named `authorized_keys`, to store the public key in:
 ```
-    grader:~$ mkdir .ssh
-    grader:~$ touch .ssh/authorized_keys
-```
-
-(i)  Switch back to your Local Machine, and copy the contents of your_file.pub:
-```
-    YOUR LOCAL MACHINE:~$ sudo cat ~/.ssh/your_file.pub
+grader:~$ mkdir .ssh
+grader:~$ touch .ssh/authorized_keys
 ```
 
-(j)  Switch back to virtual server, edit ```authorized_keys```-file and paste the content of ```your_file.pub``` inside. Save file.
+i)  Switch back to your Local Machine, and copy the contents of your_file.pub:
 ```
-    grader:~$ sudo nano .ssh/authorized_keys
-```
-
-(k)  Set specific file permission on SSH and ```authorized_keys``` directories:
-```
-    grader:~$ chmod 700 .ssh
-    grader:~$ chmod 644 .ssh/authorized_keys
+YOUR LOCAL MACHINE:~$ sudo cat ~/.ssh/your_file.pub
 ```
 
-(l) Disable clear text password, to use ssh key only, by running:
+j)  Switch back to virtual server, edit ```authorized_keys```-file and paste the content of ```your_file.pub``` inside. Save file.
 ```
-    grader:~$ sudo nano /etc/ssh/sshd_config
+grader:~$ sudo nano .ssh/authorized_keys
+```
+
+k)  Set specific file permission on SSH and ```authorized_keys``` directories:
+```
+grader:~$ chmod 700 .ssh
+grader:~$ chmod 644 .ssh/authorized_keys
+```
+
+l) Disable clear text password, to use ssh key only, by running:
+```
+grader:~$ sudo nano /etc/ssh/sshd_config
 ```
 In file, change `PasswordAuthentication` to `no`, like so:
 ```
 # Change to no to disable tunnelled clear text passwords
 PasswordAuthentication no
 ```
-(m) Restart SSH service for changes to take effect. 
+m) Restart SSH service for changes to take effect. 
 ```
-	grader:~$ sudo service ssh restart  
+grader:~$ sudo service ssh restart  
 ```
 
-(n) At next login for grader, use the private key, instead of the clear text passwrod, to login, like so:
+n) At next login for grader, use the private key, instead of the clear text passwrod, to login, like so:
 ```
-	YOUR LOCAL MACHINE:~$ ssh grader@18.195.163.63 -p 2200 -i path/to/your/private/key
+YOUR LOCAL MACHINE:~$ ssh grader@18.195.163.63 -p 2200 -i path/to/your/private/key
 ```
 
 ## Configure the firewall (UFW)
 Configure the Uncomplicated Firewall (UFW) to only allow incoming connections for SSH (port 2200), HTTP (port 80), and NTP (port 123).
 
-(a) First, check that UFW is inactive by running:
+a) First, check that UFW is inactive by running, note it should be **_inactive_** currently:
+```
+grader:~$ sudo ufw status
+```  
 
+b) Disallow all incoming connections except the ones needed, following the security rule of least privilege, run the following commands:
 
+```
+grader:~$ sudo ufw allow 2200/tcp
+grader:~$ sudo ufw allow 80/tcp
+grader:~$ sudo ufw allow 123/udp
+grader:~$ sudo ufw default deny incoming
+grader:~$ sudo ufw default allow outgoing
+```
 
 
 Warning: When changing the SSH port, make sure that the firewall is open for port 2200 first, so that you don't lock yourself out of the server. 
