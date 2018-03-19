@@ -6,7 +6,7 @@ IP address: 18.195.163.63
 Port: 2200
 
 user can ssh into the system using this command :  
-```shell
+```
 ssh grader@18.195.163.63 -p 2200  
 ```
 
@@ -33,8 +33,8 @@ Optional: review flask app at: [github](https://github.com/harushimo/fullstack-n
 
 _Each step is described in the following._
 
-## 1. Start a new Ubuntu Linux server instance on Amazon Lightsail
-Follow the instructions at [Udacity](https://classroom.udacity.com/nanodegrees/nd004/parts/ab002e9a-b26c-43a4-8460-dc4c4b11c379/modules/357367901175462/lessons/3573679011239847/concepts/c4cbd3f2-9adb-45d4-8eaf-b5fc89cc606e), to create a virtual machine running Ubuntu (OS only) at Amazon Lightsail. Remember, to allow port number 2200 in firewall settings. Now, go to your terminal, cd to the folder of the .pem-file from Lightspeed and log-in with ssh:
+## 1. Create a Ubuntu instance on Amazon Lightsail
+Follow the instructions at [Udacity](https://classroom.udacity.com/nanodegrees/nd004/parts/ab002e9a-b26c-43a4-8460-dc4c4b11c379/modules/357367901175462/lessons/3573679011239847/concepts/c4cbd3f2-9adb-45d4-8eaf-b5fc89cc606e), to create a virtual machine running Ubuntu (OS only) at Amazon Lightsail. Remember, to allow port number 2200 in firewall settings. Also, go to settings and download the key file (ending with .pem). Then, go to your terminal, cd to the folder of the .pem-file from Amazon and login with ssh:
 
 ```
 YOUR LOCAL MACHINE:~$ ssh -i LightsailDefaultPrivateKey-eu-central-1.pem ubuntu@18.195.163.63
@@ -43,7 +43,7 @@ YOUR LOCAL MACHINE:~$ ssh -i LightsailDefaultPrivateKey-eu-central-1.pem ubuntu@
 ## 2. Update all currently installed packages.
 Update all available packages: This will provide a list of packages to be upgraded.
     
-    ubuntu@:~# sudo apt-get update  
+ubuntu@:~# sudo apt-get update  
     
 Upgrade packages to newer versions:   
     
@@ -152,12 +152,15 @@ PasswordAuthentication no
 ## Configure the firewall (UFW)
 Configure the Uncomplicated Firewall (UFW) to only allow incoming connections for SSH (port 2200), HTTP (port 80), and NTP (port 123).
 
-(a) First, check the 
+(a) First, check that UFW is inactive by running:
 
 
 
 
-Warning: When changing the SSH port, make sure that the firewall is open for port 2200 first, so that you don't lock yourself out of the server. Review this video for details! When you change the SSH port, the Lightsail instance will no longer be accessible through the web app 'Connect using SSH' button. The button assumes the default port is being used. There are instructions on the same page for connecting from your terminal to the instance. Connect using those instructions and then follow the rest of the steps.
+Warning: When changing the SSH port, make sure that the firewall is open for port 2200 first, so that you don't lock yourself out of the server. 
+
+
+Review this video for details! When you change the SSH port, the Lightsail instance will no longer be accessible through the web app 'Connect using SSH' button. The button assumes the default port is being used. There are instructions on the same page for connecting from your terminal to the instance. Connect using those instructions and then follow the rest of the steps.
 Sudo ufw allow 2200/tcp
 Sudo ufw allow 80/tcp
 Sudo ufw allow 123/udp
