@@ -147,7 +147,7 @@ n) At next login for grader, use the private key, instead of the clear text pass
 YOUR LOCAL MACHINE:~$ ssh grader@18.195.163.63 -p 2200 -i path/to/your/private/key
 ```
 
-## Configure the firewall (UFW)
+## 5. Configure firewall (UFW)
 Configure the Uncomplicated Firewall (UFW) to only allow incoming connections for SSH (port 2200), HTTP (port 80), and NTP (port 123).
 
 a) First, check that UFW is inactive by running, note it should be **_inactive_** currently:
@@ -165,59 +165,40 @@ grader:~$ sudo ufw default deny incoming
 grader:~$ sudo ufw default allow outgoing
 ```
 
+c) You can now enable the firewall. Note: make sure that the firewall is open for port 2200 in Lightspeed settings:
+'''
+grader:~$ sudo ufw enable
+'''
 
-Warning: When changing the SSH port, make sure that the firewall is open for port 2200 first, so that you don't lock yourself out of the server. 
+Remark, the Lightsail instance will no longer be acccessible thorugh the web app 'Connect using SSH'-button, as firewall has restricted ssh to ports as specified above.
 
+## 6. Configure local Time Zone to UTC
+a) Open Timezone selection dialog, afterwhich a selection menu will open up. Choose **None of the above**,and then choose **UTC**.:  
+```
+grader:~$ sudo dpkg-reconfigure tzdata
+```  
 
-Review this video for details! When you change the SSH port, the Lightsail instance will no longer be accessible through the web app 'Connect using SSH' button. The button assumes the default port is being used. There are instructions on the same page for connecting from your terminal to the instance. Connect using those instructions and then follow the rest of the steps.
-Sudo ufw allow 2200/tcp
-Sudo ufw allow 80/tcp
-Sudo ufw allow 123/udp
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw enable
+## 7. Install and Configure Apache to serve a Python mod_wsgi application
+Install Apache as http server and mod_wsgi to connect to python.
 
-sudo /etc/init.d/ssh restart
-	
+a. Install Apache web Server:   
+```
+grader@ip-10-20-11-198:~$ sudo apt-get install apache2
+```
+If apache was installed correctly you should see a default page when you will visit your IP address from develop environment page : `52.35.43.246`.
 
-Connect via ssh locally:
-1.	Go to the "SSH Keys" tab under your Lightsail Account page
-2.	Select the Default option under your region and download the key pair file
-•	Will be a .pem file, ex. LightsailDefaultPrivateKey-us-west-2.pem
-3.	Open up your terminal and navigate to the directory where the above file is stored
-4.	Run chmod 600 [fileName] at the command line to restrict file permission so only you can read it
-5.	Run ssh -i [fileName] [username]@[Public IP] to establish the connection to Lightsail
-•	Username and IP are available under the "Connect" tab on the Lightsail web dashboard for your resource
-sudo ssh -i LightSailDefaultPrivateKey-eu-central-1.pem ubuntu@18.195.163.63 -p 2200
+2. Install mod_wsgi, and python-setuptools helper package. This will serve Python apps from Apache:  
+```
+grader@ip-10-20-11-198:~$ sudo apt-get install python-setuptools libapache2-mod-wsgi
+```
 
-Give grader access.
-In order for your project to be reviewed, the grader needs to be able to log in to your server.
-6. Create a new user account named grader.
-Password: 
-Sudo adduser <new_user_name>
-Cat etc/passwd
-
-
-8. Create an SSH key pair for grader using the ssh-keygen tool.
-ssh-keygen
-/Users/anderspedersen/.ssh/<project_name>
-chmod 700 .ssh
-chmod 644 .ssh/authorized_keys
-# Password to access file: 
-create authorized_keys file in <new_user>/.ssh/authorized_keys and copy contents of .pub.
-PasswordAuthentication no
-755
-644
-Log-in as new user:
-Sudo ssh -i /Users/anderspedersen/.ssh/project5Udacity grader@18.195.163.63 -p 2200
-
-Ændret to ting: psswordauthroentication no -> yes. Og pubkeyauthornetication yes -> no
+3. Configure Apache to handle requests using the WSGI module
+```
+grader@ip-10-20-11-198:~$ sudo nano cat/etc/apache2/sites-enabled/000-default.conf
+```  
+Add the following line: `WSGIScriptAlias / /var/www/html/catalog.wsgi` at the end of the `<VirtualHost *:80>` block, right before the closing `</VirtualHost>`. Now save and quit the nano editor. Restart Apache: `sudo apache2ctl restart`
 
 
-Prepare to deploy your project.
-9. Configure the local timezone to UTC.
-Sudo dpkg-reconfigure tzdata
-10. Install and configure Apache to serve a Python mod_wsgi application.
 sudo apt-get install apache2
 Visit apache server http://18.195.163.63:80 
 sudo apt-get install libapache2-mod-wsgi
@@ -284,32 +265,14 @@ http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/
 
 sudo apt-get install python-sqlalchemy
 
+Jeg har lavet: sudo nano /etc/apache2/sites-ailable/catalog.conf
 sqlalchemy fundet!
-
-error log, current error:
-problem is, that sqlalchemy cannot be found!
-[Mon Mar 19 09:41:49.751320 2018] [wsgi:error] [pid 11072:tid 140687701903104] [client 37.4.255.144:64386]   File "/var/www/catalog/catalog.wsgi", line 7, in <module>
-[Mon Mar 19 09:41:49.751345 2018] [wsgi:error] [pid 11072:tid 140687701903104] [client 37.4.255.144:64386]     from app import app as application
-[Mon Mar 19 09:41:49.751351 2018] [wsgi:error] [pid 11072:tid 140687701903104] [client 37.4.255.144:64386]   File "/var/www/catalog/app/app.py", line 6, in <module>
-[Mon Mar 19 09:41:49.751362 2018] [wsgi:error] [pid 11072:tid 140687701903104] [client 37.4.255.144:64386]     from sqlalchemy import create_engine, asc
-[Mon Mar 19 09:41:49.751377 2018] [wsgi:error] [pid 11072:tid 140687701903104] [client 37.4.255.144:64386] ImportError: No module named sqlalchemy
-
-To-dos
-•	Comment out all code to test
-•	Jeg har lavet: sudo nano /etc/apache2/sites-ailable/catalog.conf
-•	https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps 
-•	Follow another student’s path: 	
-•	Short and concise: https://github.com/harushimo/linux-server-configuration
-•	https://github.com/ghoshabhi/P5-Linux-Config 
-OperationalError: (sqlite3.OperationalError) unable to open database file
-19 10:50:40.601091
-
-change oauth at linkedin. Address.
 
 14. Set it up in your server so that it functions correctly when visiting your server’s IP address in a browser. Make sure that your .git directory is not publicly accessible via a browser!
 
+change oauth at linkedin. Address.
 
-Review this sectioN, to check for all requirements: https://review.udacity.com/#!/rubrics/7/view 
+just change the link in app.py from localhost => ip, also in linkedin oAouth settings.
 
 # Summary of software installed
 | Package Name    |Descripton     | 
@@ -323,3 +286,7 @@ Review this sectioN, to check for all requirements: https://review.udacity.com/#
 |**flask**|	Microframework for web applications|
 |**pip**|	Postgresql Database server|
 |**python-psycopg2**|	PostgreSQL adapter for Python|
+
+
+## Bibliography
+* https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps
