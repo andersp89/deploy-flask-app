@@ -1,6 +1,6 @@
 # Project: Linux Server Configuration
 
-This readme describes the process to deploy a [flask web application](https://github.com/andersp89/catalog-app) on a Ubuntu 16.04.2 LTS server at [Amazon Lightsail](https://aws.amazon.com/lightsail/). Please visit http://18.195.163.63/, to see the functioning app.
+This readme describes the process to deploy a [flask web application](https://github.com/andersp89/catalog-app) on a Ubuntu 16.04.2 LTS server at [Amazon Lightsail](https://aws.amazon.com/lightsail/). Please visit http://18.195.163.63/, to see the deployed app.
 
 IP address: 18.195.163.63
 Port: 2200
