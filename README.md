@@ -1,6 +1,6 @@
 # Project: Linux Server Configuration
 
-This readme describes the process to deploy a [flask web application](https://github.com/andersp89/catalog-app) on a Ubuntu 16.04.2 LTS server at Amazon Lightsail. Please visit http://18.195.163.63/, to see the functioning app.
+This readme describes the process to deploy a [flask web application](https://github.com/andersp89/catalog-app) on a Ubuntu 16.04.2 LTS server at [Amazon Lightsail](https://aws.amazon.com/lightsail/). Please visit http://18.195.163.63/, to see the functioning app.
 
 IP address: 18.195.163.63
 Port: 2200
@@ -326,7 +326,7 @@ Please find below the packages used during the deployment of https://github.com/
 | Package Name    |Descripton     | 
 | ----------------|:-------------:| 
 | **apache2**     | HTTP Server |
-| **libapache2-mod-wsgi** |	hosts Python applications on Apache2 server|
+| **libapache2-mod-wsgi** |	Hosts Python applications on Apache2 server|
 |**postgresql**|	Postgresql Database server|
 |**git**|	Version control system tools|
 |**python-requests**|	HTTP module|
