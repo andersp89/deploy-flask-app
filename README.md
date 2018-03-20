@@ -318,9 +318,7 @@ That's it! Everything should now be set-up properly. You just need to restart th
 ```
 grader:~$ sudo apache2ctl restart
 ```
-
 **Finsihed - enjoy using the newly deployed Flask app at your Ubuntu server or go to http://18.195.163.63!**
-
 
 # Summary of software installed
 Please find below the packages used during the deployment of https://github.com/andersp89/catalog-app to Amazon Lightspeed:
