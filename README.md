@@ -178,33 +178,171 @@ a) Open Timezone selection dialog, afterwhich a selection menu will open up. Cho
 grader:~$ sudo dpkg-reconfigure tzdata
 ```  
 
-## 7. Install and Configure Apache to serve a Python mod_wsgi application
-Install Apache as http server and mod_wsgi to connect to python.
+## 7. Install and configure Apache HTTP server
+Install Apache as HTTP server and mod_wsgi to connect to python.
 
-a. Install Apache web Server:   
+a) Install Apache web Server:   
 ```
-grader@ip-10-20-11-198:~$ sudo apt-get install apache2
+grader:~$ sudo apt-get install apache2
 ```
-If apache was installed correctly you should see a default page when you will visit your IP address from develop environment page : `52.35.43.246`.
+If Apache was installed correctly, the default page will show when visiting the ip address: http://18.195.163.63/.
 
-2. Install mod_wsgi, and python-setuptools helper package. This will serve Python apps from Apache:  
+b) Install mod_wsgi to serve the Flask app with Apache:  
 ```
-grader@ip-10-20-11-198:~$ sudo apt-get install python-setuptools libapache2-mod-wsgi
+grader:~$ sudo apt-get install libapache2-mod-wsgi
 ```
 
-3. Configure Apache to handle requests using the WSGI module
+c) Configure Apache to serve Flask App. First navigate to the ```wwww``` directory:  
 ```
-grader@ip-10-20-11-198:~$ sudo nano cat/etc/apache2/sites-enabled/000-default.conf
+grader:~$ cd /var/www
 ```  
-Add the following line: `WSGIScriptAlias / /var/www/html/catalog.wsgi` at the end of the `<VirtualHost *:80>` block, right before the closing `</VirtualHost>`. Now save and quit the nano editor. Restart Apache: `sudo apache2ctl restart`
 
+d) Then, create a directory called `catalog` and within that make another directory called `app`. The `/var/www/catalog` will house our wsgi application which points to the server file, in my case it's name is: _app.py_. Follow these steps: 
+
+```
+grader:/var/www$ sudo mkdir catalog
+grader:/var/www$ cd catalog
+grader:/var/www$ sudo mkdir app
+```
+
+e) Now install dependancies for running my Flask app:
+```
+grader:~$ sudo apt-get install python-pip
+grader:~$ sudo pip install Flask
+grader:~$ sudo pip install Flask-SQLAlchemy
+grader:~$ sudo pip install requests
+grader:~$ sudo pip install psycopg2
+```
+
+d) Then, configure the virtual host file **_catalog.conf_**, to point mod_wsgi to the ```.wsgi```-file, that we will create next. First, create the `.conf` file:   
+```
+grader:/var/www/catalog/app$ sudo nano /etc/apache2/sites-available/catalog.conf
+```  
+
+Type in and save the following code in the file:
+
+```
+<VirtualHost *:80>
+      ServerName 18.195.163.63
+      ServerAdmin anders@ptrading.dk
+      WSGIScriptAlias / /var/www/catalog/catalog.wsgi
+      <Directory /var/www/catalog/app/>
+          Order allow,deny
+          Allow from all
+      </Directory>
+      Alias /static /var/www/catalog/app/static
+      <Directory /var/www/catalog/app/static/>
+          Order allow,deny
+          Allow from all
+      </Directory>
+      ErrorLog ${APACHE_LOG_DIR}/error.log
+      LogLevel warn
+      CustomLog ${APACHE_LOG_DIR}/access.log combined
+  </VirtualHost>
+```
+
+e) Now, create the `catalog.wsgi`-file, to point mod_wsgi to the right python file that holds the application logic. The file will be created in `/var/www/catalog` directory. Follow the steps: 
+```
+grader:/var/www/catalog/catalog$ cd /var/www/catalog
+grader:/var/www/catalog$ sudo nano catalog.wsgi
+```
+
+Paste in the following code and save:
+```
+## /var/www/catalog/
+#!/usr/bin/python
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0,"/var/www/catalog/app/")
+
+from app import app as application
+application.secret_key = 'Add your secret key'
+```
+_Please note that here I have mentioned `app` because that is the file which houses my application logic._
+
+d) Now, enable the virtual host, for mod_wsgi to use the `catalog.wsgi`:  
+```
+grader:/var/www/catalog$ sudo a2ensite catalog.wsgi
+```
+
+## 8. Install Git and clone Flask App
+
+Now, the server is ready to serve app.py, however, the application is still missing. 
+
+a) First, we need to install git, to be able to clone the repository. Follow this step:
+```
+grader:~$ sudo apt-get install git
+```
+
+b) Clone the git repository:
+```
+grader:/var/www/catalog$ sudo git clone https://github.com/andersp89/catalog-app.git
+```  
+
+c) Move the application logic inside the newly cloned `catalog-app` to `app`, and delete then the empty folder:
+```
+grader:/var/www/catalog$ mv catalog-app/* /var/catalog/app
+grader:/var/www/catalog$ sudo rm -rf catalog-app
+```
+
+## 9. Set up Postgresql
+Now we will install and configure **Postgresql**, to serve our database to store users, categories and items.
+
+a) First, install `postgresql`:
+```
+sudo apt-get install postgresql
+```
+
+b) 
+
+a) Change the default user to postgres by typing : ```sudo su postgres``` and then type in ```psql```
+
+```
+postgres=# CREATE USER catalog WITH PASSWORD 'catalog';
+postgres=# ALTER USER catalog CREATEDB;
+postgres=# CREATE DATABASE catalog WITH OWNER catalog;
+```
+
+Revoke all rights on the database schema, and grant access to catalog only.
+```
+catalog=# REVOKE ALL ON SCHEMA public FROM public;
+catalog=# GRANT ALL ON SCHEMA public TO catalog;
+```
+
+Exit Postgresql and postgres user:
+```
+postgres=# \q
+postgres@ip-10-20-11-110~$ exit
+```
+
+Now we should run the `database_setup.py` to create the database and `lotsofmenus.py` to populate the database initially. Note that inside these files your create engine should point to the new databse now :   
+```
+engine = create_engine('postgresql://catalog:catalog@localhost/catalog')
+```
+
+The basic syntax of this statement is:   
+
+```
+postgresql://username:password@host:port/database
+```
+
+ We will also create a user - **catalog** with previleges to create database only which will be password protected. Follow the steps:
+
+# J. Configure Oauth credentials for 3rd party authentication 
+
+MANGLER!
+
+Restart Apache: `sudo apache2ctl restart`
+
+
+**Finsihed - enjoy using the deployed Flask web app at your Ubuntu server!**
 
 sudo apt-get install apache2
 Visit apache server http://18.195.163.63:80 
 sudo apt-get install libapache2-mod-wsgi
 editing the /etc/apache2/sites-enabled/000-default.conf file. add the following line at the end of the <VirtualHost *:80> block, right before the closing </VirtualHost> line: WSGIScriptAlias / /var/www/html/myapp.wsgi
 Restart the apache server! sudo apache2ctl restart 
-
 
 You just defined the name of the file you need to write within your Apache configuration by using the WSGIScriptAlias directive. Despite having the extension .wsgi, these are just Python applications. Create the /var/www/html/myapp.wsgi file using the command sudo nano /var/www/html/myapp.wsgi
 def application(environ, start_response):
